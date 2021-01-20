@@ -15,7 +15,7 @@ typedef uint8_t  u8;
 using namespace Eigen;
 using namespace std;
 #define PI 3.141592653589793
-int b=1;
+int total=1;
 /* make sure the memory is successive */
 #pragma pack(2)
 typedef struct ImuRaw {
@@ -51,15 +51,6 @@ typedef struct Phi{
     u8 check1; /* 校验和 */
     u8 check2; /* 校验和 */
 }Phi;
-static void FLASH_Read(long *startAddress,double *readData,uint16_t count){
-    int i=0;
-    double *pf;
-    pf=(double*)(*startAddress);
-    for(i=0;i<count;i++){
-        readData[i]=*pf;
-        pf++;
-    }
-}
 void euler2dcm(const Vector3d &eulerAngle, Matrix3d &dcm) {
     Eigen::AngleAxisd rollAngle(AngleAxisd(eulerAngle(0), Vector3d::UnitX()));
     Eigen::AngleAxisd pitchAngle(AngleAxisd(eulerAngle(1), Vector3d::UnitY()));
@@ -71,12 +62,13 @@ void euler2dcm(const Vector3d &eulerAngle, Matrix3d &dcm) {
     dcm = rotation_vector.matrix();
 }
 int main() {
-//    int a=0;
-//    b=2;
-//    change();
-//    a=num();
-//    std::cout<<a+N<<endl;
-//    std::cout<<c<<endl;
+    //变量规则
+    int a=0;
+    total=2;
+    change();
+    a=num();
+    std::cout<<a+N<<endl;
+    std::cout<<c<<endl;
 
 
 //    //条件断点的使用
@@ -85,36 +77,36 @@ int main() {
 //        cout<<i<<endl;
 //    }
 
-    ifstream iferror;
-    double start=357759.9,T=180;
-    iferror.open("/mnt/Storage/FileRecv/Navigation/组合导航数据处理/20210114车载/result/B/LC_OUTAGE60S_TXT.err");
-    double poserr[3],t,velerr[3],atterr[3];
-    double posmaxrms[3]={0},attmaxrms[3]={0},posmaxmax=0,plane;
-    int num = 0;
-    while(!iferror.eof()){
-        iferror>>t>>poserr[0]>>poserr[1]>>poserr[2]>>velerr[0]>>velerr[1]>>velerr[2]>>atterr[0]>>atterr[1]>>atterr[2];
-        if(t==start){
-            num++;
-            start+=T;
-            posmaxrms[0]+=poserr[0]*poserr[0];
-            posmaxrms[1]+=poserr[1]*poserr[1];
-            posmaxrms[2]+=poserr[2]*poserr[2];
-            attmaxrms[0]+=atterr[0]*atterr[0];
-            attmaxrms[1]+=atterr[1]*atterr[1];
-            attmaxrms[2]+=atterr[2]*atterr[2];
-            plane=sqrt((poserr[0]*poserr[0]+poserr[1]*poserr[1])/2);
-            if(plane>posmaxmax)
-                posmaxmax=plane;
-        }
-    }
-    posmaxrms[0]=sqrt(posmaxrms[0]/N);
-    posmaxrms[1]=sqrt(posmaxrms[1]/N);
-    posmaxrms[2]=sqrt(posmaxrms[2]/N);
-    attmaxrms[0]=sqrt(attmaxrms[0]/N);
-    attmaxrms[1]=sqrt(attmaxrms[1]/N);
-    attmaxrms[2]=sqrt(attmaxrms[2]/N);
-    printf("%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n\n",
-           posmaxrms[0],posmaxrms[1],posmaxrms[2],attmaxrms[0],attmaxrms[1],attmaxrms[2],posmaxmax);
+    // ifstream iferror;
+    // double start=357759.9,T=180;
+    // iferror.open("/mnt/Storage/FileRecv/Navigation/组合导航数据处理/20210114车载/result/B/LC_OUTAGE60S_TXT.err");
+    // double poserr[3],t,velerr[3],atterr[3];
+    // double posmaxrms[3]={0},attmaxrms[3]={0},posmaxmax=0,plane;
+    // int num = 0;
+    // while(!iferror.eof()){
+    //     iferror>>t>>poserr[0]>>poserr[1]>>poserr[2]>>velerr[0]>>velerr[1]>>velerr[2]>>atterr[0]>>atterr[1]>>atterr[2];
+    //     if(t==start){
+    //         num++;
+    //         start+=T;
+    //         posmaxrms[0]+=poserr[0]*poserr[0];
+    //         posmaxrms[1]+=poserr[1]*poserr[1];
+    //         posmaxrms[2]+=poserr[2]*poserr[2];
+    //         attmaxrms[0]+=atterr[0]*atterr[0];
+    //         attmaxrms[1]+=atterr[1]*atterr[1];
+    //         attmaxrms[2]+=atterr[2]*atterr[2];
+    //         plane=sqrt((poserr[0]*poserr[0]+poserr[1]*poserr[1])/2);
+    //         if(plane>posmaxmax)
+    //             posmaxmax=plane;
+    //     }
+    // }
+    // posmaxrms[0]=sqrt(posmaxrms[0]/N);
+    // posmaxrms[1]=sqrt(posmaxrms[1]/N);
+    // posmaxrms[2]=sqrt(posmaxrms[2]/N);
+    // attmaxrms[0]=sqrt(attmaxrms[0]/N);
+    // attmaxrms[1]=sqrt(attmaxrms[1]/N);
+    // attmaxrms[2]=sqrt(attmaxrms[2]/N);
+    // printf("%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n\n",
+    //        posmaxrms[0],posmaxrms[1],posmaxrms[2],attmaxrms[0],attmaxrms[1],attmaxrms[2],posmaxmax);
 
     //systime2sow
 //    int64_t time;

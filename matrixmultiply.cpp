@@ -14,9 +14,9 @@ int num(void){
 void change(void){
     a=N;
     c=2;
-    extern int b;
+    extern int total;
     std::cout<<a<<endl;
-    std::cout<<b<<endl;
+    std::cout<<total<<endl;
 }
 
 // get current local time stamp
