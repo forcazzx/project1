@@ -15,7 +15,7 @@ typedef uint8_t  u8;
 using namespace Eigen;
 using namespace std;
 #define PI 3.141592653589793
-int total=1;
+int totalb=1;
 /* make sure the memory is successive */
 #pragma pack(2)
 typedef struct ImuRaw {
@@ -63,12 +63,11 @@ void euler2dcm(const Vector3d &eulerAngle, Matrix3d &dcm) {
 }
 int main() {
     //变量规则
-    int a=0;
-    total=2;
+    totalb=2;
+    std::cout<<totalc<<endl;
     change();
-    a=num();
-    std::cout<<a+N<<endl;
-    std::cout<<c<<endl;
+    std::cout<<num()<<endl;
+    std::cout<<totalc<<endl;
 
 
 //    //条件断点的使用

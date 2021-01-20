@@ -6,17 +6,14 @@
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
-int a=1;
 
 int num(void){
-    std::cout<<c<<endl;
+    return totalc;
 }
 void change(void){
-    a=N;
-    c=2;
-    extern int total;
-    std::cout<<a<<endl;
-    std::cout<<total<<endl;
+    totalc=3;
+    extern int totalb;
+    std::cout<<totalb<<endl;
 }
 
 // get current local time stamp

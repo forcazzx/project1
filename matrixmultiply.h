@@ -10,7 +10,7 @@
 using namespace Eigen;
 using namespace std;
 #define N 10
-static int c;
+static int totalc=1;
 int num(void);
 void change(void);
 int64_t getCurrentLocalTimeStamp(void);
