@@ -18,14 +18,7 @@ void change(void){
     std::cout<<a<<endl;
     std::cout<<b<<endl;
 }
-void multiply(Matrix3d matrix,Matrix3d matrix2,Matrix3d* matrix3)
-{
-    *matrix3=matrix*matrix2;
-}
-Matrix3d multiply2(Matrix3d matrix,Matrix3d matrix2)
-{
-    return matrix*matrix2;
-}
+
 // get current local time stamp
 int64_t getCurrentLocalTimeStamp()
 {
@@ -36,61 +29,39 @@ int64_t getCurrentLocalTimeStamp()
     // return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-
-
-static struct termios initial_settings, new_settings;
-static int peek_character = -1;
-void init_keyboard(void);
-void close_keyboard(void);
-int kbhit(void);
-int readch(void);
-void init_keyboard()
+void UTC2SOW(int year, int month, int day, int hour, int minute, double second, int *weekNo, double *secondOfweek)
 {
-    tcgetattr(0,&initial_settings);
-    new_settings = initial_settings;
-    new_settings.c_lflag |= ICANON;
-    new_settings.c_lflag |= ECHO;
-    new_settings.c_lflag |= ISIG;
-    new_settings.c_cc[VMIN] = 1;
-    new_settings.c_cc[VTIME] = 0;
-    tcsetattr(0, TCSANOW, &new_settings);
-}
+/*****协调世界时转换为GPS的周秒表示*****///输入时间应为协调世界时，即当地时间-8，返回时间为GPS周和周秒
+    int DayofYear = 0;
+    int DayofMonth = 0;
 
-void close_keyboard()
-{
-    tcsetattr(0, TCSANOW, &initial_settings);
-}
 
-int kbhit()
-{
-    unsigned char ch;
-    int nread;
-
-    if (peek_character != -1) return 1;
-    new_settings.c_cc[VMIN]=0;
-    tcsetattr(0, TCSANOW, &new_settings);
-    nread = read(0,&ch,1);
-    new_settings.c_cc[VMIN]=1;
-    tcsetattr(0, TCSANOW, &new_settings);
-    if(nread == 1)
+    for (int i = 1980; i < year; i++)//从1980年到当前年的上一年经过的天数
     {
-        peek_character = ch;
-        return 1;
+        if ((i % 4 == 0 && i % 100 != 0) || i % 400 == 0)
+            DayofYear += 366;
+        else
+            DayofYear += 365;
     }
-    return 0;
-}
-
-int readch()
-{
-    char ch;
-
-    if(peek_character != -1)
+    for (int i = 1; i < month; i++)//从一月到当前月的上一月经历的天数
     {
-        ch = peek_character;
-        peek_character = -1;
-        return ch;
+        if (i == 1 || i == 3 || i == 5 || i == 7 || i == 8 || i == 10 || i ==12)
+            DayofMonth += 31;
+        else if (i == 4 || i == 6 || i == 9 || i == 11)
+            DayofMonth += 30;
+        else
+        {
+            if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
+                DayofMonth += 29;
+            else
+                DayofMonth += 28;
+        }
     }
-    read(0,&ch,1);
-    return ch;
+    int Day;
+    Day = DayofMonth + day + DayofYear-6;
+    *weekNo = Day%7;
+    *secondOfweek = Day % 7 * 86400 + hour * 3600 + minute * 60 + second+18;//18表示跳秒
 }
+
+
 

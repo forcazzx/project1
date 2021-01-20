@@ -78,44 +78,6 @@ int main() {
 //    std::cout<<a+N<<endl;
 //    std::cout<<c<<endl;
 
-//    //转换float数据到字节数组
-//    unsigned char i;
-//    float floatVariable=1.1;
-//    unsigned char charArray[4];
-//    unsigned char *pdata = (unsigned char*)&floatVariable;  //把float类型的指针强制转换为unsigned char型
-//    for(i=0;i<4;i++)
-//    {
-//        charArray[i] = *pdata++;//把相应地址中的数据保存到unsigned char数组中
-//    }
-//    //转换字节数组到float数据
-//    float floatVariable2;
-//    long test=(long) charArray;
-//    floatVariable2=*((float*) test);
-//    cout<<floatVariable<<','<<floatVariable2<<endl;
-//
-//    double data[3]={1.1,2.2,3.3},rddata[3];
-//    long startAddress=(long) data;
-//    FLASH_Read(&startAddress,rddata,3);
-//    cout<<&rddata[0]<<','<<&rddata[1]<<','<<&rddata[2]<<endl;
-
-//    int i=0,j=0,count=2;
-//    long long int rd=0;
-//    double writeData[2]={1.1,2.2},readData[2];
-//    char data[2*8],temp;
-//    int startAddress=0,readAddress=0;
-//    for(i=0;i<count;i++){
-//        data[startAddress]=writeData[i];
-//        startAddress++;
-//    }
-
-//    readAddress=startAddress-2;
-//    for(i=0;i<count;i++){
-//        for(j=0;j<8;j++){
-//            rd=(rd<<8)+data[readAddress+7-j+i*1];
-//        }
-//        readData[i]=rd;
-//    }
-//    cout<<data[0]<<','<<data[1]<<endl;
 
 //    //条件断点的使用
 //    int i=0;
@@ -123,10 +85,38 @@ int main() {
 //        cout<<i<<endl;
 //    }
 
-    //结构体赋值
-//    Phi phi;
-//    std::cout << sizeof(phi) << std::endl;
+    ifstream iferror;
+    double start=357759.9,T=180;
+    iferror.open("/mnt/Storage/FileRecv/Navigation/组合导航数据处理/20210114车载/result/B/LC_OUTAGE60S_TXT.err");
+    double poserr[3],t,velerr[3],atterr[3];
+    double posmaxrms[3]={0},attmaxrms[3]={0},posmaxmax=0,plane;
+    int num = 0;
+    while(!iferror.eof()){
+        iferror>>t>>poserr[0]>>poserr[1]>>poserr[2]>>velerr[0]>>velerr[1]>>velerr[2]>>atterr[0]>>atterr[1]>>atterr[2];
+        if(t==start){
+            num++;
+            start+=T;
+            posmaxrms[0]+=poserr[0]*poserr[0];
+            posmaxrms[1]+=poserr[1]*poserr[1];
+            posmaxrms[2]+=poserr[2]*poserr[2];
+            attmaxrms[0]+=atterr[0]*atterr[0];
+            attmaxrms[1]+=atterr[1]*atterr[1];
+            attmaxrms[2]+=atterr[2]*atterr[2];
+            plane=sqrt((poserr[0]*poserr[0]+poserr[1]*poserr[1])/2);
+            if(plane>posmaxmax)
+                posmaxmax=plane;
+        }
+    }
+    posmaxrms[0]=sqrt(posmaxrms[0]/N);
+    posmaxrms[1]=sqrt(posmaxrms[1]/N);
+    posmaxrms[2]=sqrt(posmaxrms[2]/N);
+    attmaxrms[0]=sqrt(attmaxrms[0]/N);
+    attmaxrms[1]=sqrt(attmaxrms[1]/N);
+    attmaxrms[2]=sqrt(attmaxrms[2]/N);
+    printf("%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n%.6f\n\n",
+           posmaxrms[0],posmaxrms[1],posmaxrms[2],attmaxrms[0],attmaxrms[1],attmaxrms[2],posmaxmax);
 
+    //systime2sow
 //    int64_t time;
 //    time=getCurrentLocalTimeStamp();
 //    time=time-3*24*3600*1000;
@@ -134,12 +124,17 @@ int main() {
 //    double sow=time;
 //    sow=18+sow/1000;
 //    printf("%.3f\n",sow);
-//    char buff[100];
-//    sprintf(buff,"/home/zzx/Downloads/%ld.txt",time);
-//    ofstream offile;
-//    offile.open(buff);
 
+    //UTC2SOW
+//    int weekNo;
+//    double secondOfweek;
+//    UTC2SOW(2019,4,28,0,0,0,&weekNo,&secondOfweek);
+//    std::cout<<weekNo<<std::endl;
+//    std::cout<<secondOfweek<<std::endl;
 
+    //结构体赋值
+//    Phi phi;
+//    std::cout << sizeof(phi) << std::endl;
 
     //矩阵块赋值
 //    Matrix3d A3;
@@ -155,56 +150,6 @@ int main() {
 //        0,0,0,x;
 //    cout<<A3.inverse()<<endl;
 //    cout<<A4.inverse()<<endl;
-
-    ifstream file,file1;
-    ofstream pfile,pfile1,pfile2,pfilebin;
-    char i300data[32];
-    uint16_t check[16];
-    uint16_t checksum=0;
-    uint8_t byte;
-    int64_t i=0,datanum=0,validnum=0,err=0,ok=0;
-    file.open("/home/zzx/cutecom.bin",ifstream::binary);
-    while(!file.eof()){
-        file.read((char*)&byte,1);
-        if(i==0){
-            if(byte==0x0E)
-                i300data[i++]=byte;
-            else{
-                if(datanum!=validnum)
-                    err++;
-                datanum=validnum;
-            }
-        }
-        else if(i==1){
-            if(byte==0xA3)
-                i300data[i++]=byte;
-            else{
-                i=0;
-                err++;
-            }
-        }
-        else if(i<32){
-            i300data[i++]=byte;
-        }
-        if(i==32){
-            i=0;
-            validnum++;
-            memcpy(check,i300data,sizeof(check));
-            for(int j=0;j<15;j++){
-                checksum+=check[j];
-            }
-            if(checksum==check[15])
-                ok++;
-        }
-    }
-    printf("%ld_%ld\n",validnum,err);
-    printf("%ld\n",ok);
-
-    //换算
-//    double D2R=0.017453292519943295;
-//    double h=12.0/3600;
-//    printf("%.18lf\n",h*D2R);
-//    std::cout<<std::fixed<<setprecision(18)<<h*D2R<<std::endl;
 
 //    //四元数赋值
 //    Vector3d vec1;
