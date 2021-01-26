@@ -4,8 +4,6 @@
 #include <chrono>
 #include "matrixmultiply.h"
 #include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
 
 int num(void){
     return totalc;
