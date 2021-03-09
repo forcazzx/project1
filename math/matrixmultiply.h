@@ -5,11 +5,9 @@
 #ifndef PROJECT1_MATRIXMULTIPLY_H
 #define PROJECT1_MATRIXMULTIPLY_H
 
-#include <Eigen/Geometry>
 #include <iostream>
-using namespace Eigen;
+#include <chrono>
 using namespace std;
-#define N 10
 static int totalc=1;
 int num(void);
 void change(void);

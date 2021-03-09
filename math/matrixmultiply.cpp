@@ -1,17 +1,13 @@
 //
 // Created by zzx on 2019/10/25.
 //
-#include <chrono>
 #include "matrixmultiply.h"
-#include <stdio.h>
 
 int num(void){
     return totalc;
 }
 void change(void){
     totalc=3;
-    extern int totalb;
-    std::cout<<totalb<<endl;
 }
 
 // get current local time stamp
